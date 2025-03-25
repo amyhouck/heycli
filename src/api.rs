@@ -1,8 +1,8 @@
 use serde_json::Value;
-use crate::{func::get_hey_cafe_api, API_URL};
+use crate::{func::{get_hey_cafe_api, post_hey_cafe_api}, API_URL};
 
 //---------------------
-// No Key
+// GET - No Key
 //---------------------
 pub fn heycafe_get_account_info(user_id: String) -> Value {
     let url = format!("{API_URL}get_account_info?query={user_id}");
@@ -11,15 +11,15 @@ pub fn heycafe_get_account_info(user_id: String) -> Value {
 }
 
 //---------------------
-// Key Required
+// GET - Key Required
 //---------------------
 pub fn heycafe_get_notifications(new: bool) -> Vec<Value>{
-    let new = match new {
+    let seen = match new {
         true => "no",
         false => "yes"  
     };
     
-    let url = format!("{API_URL}get_account_notifications?seen={new}&convert_numeric=notifications");
+    let url = format!("{API_URL}get_account_notifications?seen={seen}&convert_numeric=notifications");
     let notifications = get_hey_cafe_api(url);
     
     let notifications_vec = notifications["response_data"]["notifications"]
@@ -42,4 +42,19 @@ pub fn heycafe_get_account_loginkey(key: &str) -> serde_json::Value {
     let loginkey = get_hey_cafe_api(url);
     
     loginkey
+}
+
+//---------------------
+// POST - Key Required
+//---------------------
+pub fn heycafe_post_account_notification_seen(
+    id: Option<&str>,
+    all: bool
+) {
+    let url = match all {
+        true => format!("{API_URL}post_account_notification_seen?type=all"),
+        false => format!("{API_URL}post_account_notification_seen?notification={}", id.unwrap())
+    };
+    
+    post_hey_cafe_api(url);
 }

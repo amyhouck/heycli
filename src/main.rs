@@ -1,4 +1,5 @@
 mod app_commands;
+mod notif_commands;
 mod func;
 mod api;
 
@@ -10,6 +11,7 @@ const API_URL: &str = "https://endpoint.hey.cafe/";
 //---------------------
 // Command Structure
 //---------------------
+// Primary commands
 #[derive(Parser)]
 struct Cli {
     #[command(subcommand)]
@@ -22,7 +24,10 @@ enum Commands {
     Connect,
     
     /// Sever the connection between heycli and Hey.Cafe
-    Disconnect
+    Disconnect,
+    
+    /// Handle Hey.Cafe notifications
+    Notif(notif_commands::NotifArgs),
 }
 
 fn main() {
@@ -32,6 +37,7 @@ fn main() {
     match cli.command {
         Some(Commands::Connect) => app_commands::app_connect(),
         Some(Commands::Disconnect) => app_commands::app_disconnect(),
+        Some(Commands::Notif(sub_com)) => notif_commands::notif_handler(sub_com),
         None => app_commands::app_base(),
     }
 }

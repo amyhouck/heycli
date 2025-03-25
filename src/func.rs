@@ -57,3 +57,15 @@ pub fn get_hey_cafe_api(mut url: String) -> Value {
     
     api_data
 }
+
+// Send a post request to Hey.Cafe
+pub fn post_hey_cafe_api(mut url: String) {
+    if let Ok(key) = std::env::var("HEYCAFE_KEY") {
+        url = format!("{url}&auth={key}");
+    }
+    
+    let client = blocking::Client::new();
+    if let Err(e) = client.post(url).send() {
+        panic!("ERROR: Unable to send POST request to API! {e}");
+    }
+}
